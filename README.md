@@ -13,7 +13,7 @@ docker run \
   -e "FIRESTORE_PROJECT_ID=project-test" \
   -p 8080:8080 \
   -d \
-  pathmotion/firestore-emulator-docker
+  ehacke/firestore-emulator
 ```
 
 or with compose
@@ -23,7 +23,7 @@ version: "2"
 
 services:
   firestore-emulator:
-    image: pathmotion/cloud-firestore-emulator
+    image: ehacke/firestore-emulator
     volumes:
       - firestore-data:/opt/data
     environment:
@@ -83,7 +83,7 @@ version: "2"
 
 services:
   firestore:
-    image: perrystallings/cloud-firestore-emulator
+    image: ehacke/firestore-emulator
     volumes:
       - firestore-data:/opt/data
     environment:
