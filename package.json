@@ -1,0 +1,22 @@
+{
+  "name": "@ehacke/firestore-emulator",
+  "version": "1.0.2",
+  "description": "A [Google Cloud Firestore Emulator](https://cloud.google.com/firestore/docs/emulator) container image. The image is meant to be used for creating an standalone emulator for testing.",
+  "main": "index.js",
+  "scripts": {
+	"test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+	"type": "git",
+	"url": "git+https://github.com/ehacke/firestore-emulator.git"
+  },
+  "keywords": [
+	"emulator"
+  ],
+  "author": "Eric Hacke",
+  "license": "MIT",
+  "bugs": {
+	"url": "https://github.com/ehacke/firestore-emulator/issues"
+  },
+  "homepage": "https://github.com/ehacke/firestore-emulator#readme"
+}
