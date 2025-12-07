@@ -226,3 +226,41 @@ By default, the container generates **permissive rules** for local testing:
 - **Realtime Database**: `".read": true, ".write": true`
 
 For custom rules, mount your own `firebase.json` with rule file paths.
+
+## Release Process
+
+This image uses **Docker Hub auto-builds** triggered by git tags.
+
+### Creating a New Release
+
+1. **Update version** in `package.json` and `Dockerfile` (LABEL "version")
+2. **Commit changes**:
+   ```bash
+   git add -A
+   git commit -m "Release vX.Y.Z"
+   ```
+3. **Create and push tag**:
+   ```bash
+   git tag X.Y.Z
+   git push origin master
+   git push origin X.Y.Z
+   ```
+4. Docker Hub automatically builds and publishes `ehacke/firestore-emulator:X.Y.Z` and `:latest`
+
+### Version Naming
+
+- Use semantic versioning (e.g., `2.0.0`, `2.1.0`)
+- Tag name should match `package.json` version
+- Historical tags (`171.0`, `183.0`, `198.0`) were based on firebase-tools versions
+
+### Manual Build (Optional)
+
+For local testing or manual pushes, use:
+```bash
+./scripts/build-and-push.sh
+```
+
+This script:
+- Requires a clean git working tree
+- Reads version from `package.json`
+- Builds and pushes both versioned and `latest` tags
