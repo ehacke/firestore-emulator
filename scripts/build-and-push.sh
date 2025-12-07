@@ -34,13 +34,11 @@ require_clean_work_tree
 PACKAGE_VERSION=$(cat package.json | jq .version -r)
 NAME=$(cat package.json | jq .name -r | sed -e 's/@ehacke\///g')
 
-docker pull google/cloud-sdk:alpine
-
 latestTag="ehacke/${NAME}:latest"
 tag="ehacke/${NAME}:${PACKAGE_VERSION}"
 
 echo "Building and pushing ${tag}"
 
-docker build -t ${tag} -t ${latestTag} --squash .
+docker build -t ${tag} -t ${latestTag} .
 docker push ${tag}
 docker push ${latestTag}
