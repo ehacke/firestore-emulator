@@ -229,23 +229,28 @@ For custom rules, mount your own `firebase.json` with rule file paths.
 
 ## Release Process
 
-This image uses **Docker Hub auto-builds** triggered by git tags.
+This image is **manually built and pushed** to Docker Hub using a script.
 
 ### Creating a New Release
 
 1. **Update version** in `package.json` and `Dockerfile` (LABEL "version")
-2. **Commit changes**:
+2. **Commit all changes**:
    ```bash
    git add -A
    git commit -m "Release vX.Y.Z"
    ```
-3. **Create and push tag**:
+3. **Create and push git tag** (for GitHub releases):
    ```bash
    git tag X.Y.Z
    git push origin master
    git push origin X.Y.Z
    ```
-4. Docker Hub automatically builds and publishes `ehacke/firestore-emulator:X.Y.Z` and `:latest`
+4. **Build and push to Docker Hub**:
+   ```bash
+   ./scripts/build-and-push.sh
+   ```
+
+The script publishes both `ehacke/firestore-emulator:X.Y.Z` and `:latest` tags.
 
 ### Version Naming
 
@@ -253,14 +258,11 @@ This image uses **Docker Hub auto-builds** triggered by git tags.
 - Tag name should match `package.json` version
 - Historical tags (`171.0`, `183.0`, `198.0`) were based on firebase-tools versions
 
-### Manual Build (Optional)
+### Build Script Details
 
-For local testing or manual pushes, use:
-```bash
-./scripts/build-and-push.sh
-```
-
-This script:
-- Requires a clean git working tree
+`scripts/build-and-push.sh`:
+- Requires a clean git working tree (commit or stash changes first)
 - Reads version from `package.json`
-- Builds and pushes both versioned and `latest` tags
+- Builds Docker image locally
+- Pushes both versioned and `latest` tags to Docker Hub
+- Requires Docker Hub authentication (`docker login`)
