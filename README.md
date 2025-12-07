@@ -1,96 +1,166 @@
-# Google Cloud Firestore Emulator
+# Firebase Emulator Suite
 
-A [Google Cloud Firestore Emulator](https://cloud.google.com/sdk/gcloud/reference/beta/emulators/firestore/) container image. The image is meant to be used for creating an standalone emulator for testing.
+A Docker container image for the [Firebase Emulator Suite](https://firebase.google.com/docs/emulator-suite). Provides a complete local development environment for Firebase services.
 
-This image is a fork from [Perrystallings work](https://github.com/perrystallings/firestore-emulator-docker), which is a fork of [SingularitiesCR work on the Datastore Emulator](https://github.com/SingularitiesCR/datastore-emulator-docker).
+Based on [SpineEventEngine/gcp-emulators](https://github.com/SpineEventEngine/gcp-emulators/tree/master/firebase-emulator).
+
+## Supported Emulators
+
+| Service | Default Port | Environment Variable |
+|---------|-------------|---------------------|
+| Firestore | 8080 | `FIRESTORE_EMULATOR_PORT` |
+| Authentication | 9099 | `AUTH_EMULATOR_PORT` |
+| Realtime Database | 9000 | `RDB_EMULATOR_PORT` |
+| Cloud Storage | 9199 | `STORAGE_EMULATOR_PORT` |
+| Cloud Pub/Sub | 8085 | `PUBSUB_EMULATOR_PORT` |
+| Cloud Functions | 5001 | `FUNCTIONS_EMULATOR_PORT` |
+| Emulator UI | 4000 | `UI_EMULATOR_PORT` |
 
 ## Quickstart
 
-```BASH
+```bash
 docker run \
-  --name firestore-emulator \
-  -v ${PWD}/firestore-data:/opt/data \
-  -e "FIRESTORE_PROJECT_ID=project-test" \
+  --name firebase-emulator \
+  -e "GCP_PROJECT=my-project" \
   -p 8080:8080 \
+  -p 9099:9099 \
+  -p 9000:9000 \
+  -p 9199:9199 \
+  -p 8085:8085 \
+  -p 5001:5001 \
+  -p 4000:4000 \
   -d \
   ehacke/firestore-emulator
 ```
 
-or with compose
+Or with Docker Compose:
 
-```YAML
-version: "2"
+```yaml
+version: "3"
 
 services:
-  firestore-emulator:
+  firebase-emulator:
     image: ehacke/firestore-emulator
-    volumes:
-      - firestore-data:/opt/data
     environment:
-      - FIRESTORE_PROJECT_ID=project-test
+      - GCP_PROJECT=my-project
+    ports:
+      - "8080:8080"   # Firestore
+      - "9099:9099"   # Auth
+      - "9000:9000"   # Realtime Database
+      - "9199:9199"   # Storage
+      - "8085:8085"   # Pub/Sub
+      - "5001:5001"   # Functions
+      - "4000:4000"   # UI
+
   app:
     image: your-app-image
     environment:
-      - FIRESTORE_EMULATOR_HOST=firestore
-      - FIRESTORE_PROJECT_ID=project-test
+      - FIRESTORE_EMULATOR_HOST=firebase-emulator:8080
+      - FIREBASE_AUTH_EMULATOR_HOST=firebase-emulator:9099
+      - FIREBASE_DATABASE_EMULATOR_HOST=firebase-emulator:9000
+      - FIREBASE_STORAGE_EMULATOR_HOST=firebase-emulator:9199
+      - PUBSUB_EMULATOR_HOST=firebase-emulator:8085
+      - GCP_PROJECT=my-project
+    depends_on:
+      - firebase-emulator
 ```
 
+## Environment Variables
 
-## Environment
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `GCP_PROJECT` | `change-me` | Google Cloud project ID |
+| `FIRESTORE_EMULATOR_PORT` | `8080` | Firestore emulator port |
+| `AUTH_EMULATOR_PORT` | `9099` | Authentication emulator port |
+| `RDB_EMULATOR_PORT` | `9000` | Realtime Database emulator port |
+| `STORAGE_EMULATOR_PORT` | `9199` | Cloud Storage emulator port |
+| `PUBSUB_EMULATOR_PORT` | `8085` | Pub/Sub emulator port |
+| `FUNCTIONS_EMULATOR_PORT` | `5001` | Cloud Functions emulator port |
+| `UI_EMULATOR_PORT` | `4000` | Emulator Suite UI port |
+| `UI_ENABLED` | `true` | Enable/disable the Emulator UI |
+| `EMULATORS_HOST` | `0.0.0.0` | Host address for all emulators |
 
-The following environment variables must be set:
+## Custom Configuration
 
-- `FIRESTORE_PROJECT_ID`: The ID of the Google Cloud project for the emulator.
+Mount a custom `firebase.json` to `/firebase/firebase.json` to use your own configuration:
 
-## Networking
-
-The emulator listens on port `8080`
-
-## Connect application with the emulator
-
-The following environment variables need to be set so your application connects to the emulator instead of the production Cloud Firestore environment:
-
-- `FIRESTORE_EMULATOR_HOST`: The listen address used by the emulator (ie. `firestore-emulator:8080`)
-- `FIRESTORE_PROJECT_ID`: The ID of the Google Cloud project used by the emulator.
-
-## Data persistance
-
-Data is saved in the `/opt/data` directory on the container.
-
-You can mount a volume on it.
-
-## Custom commands
-
-This image contains a script named `start-firestore` (included in the PATH). This script is used to initialize the Datastore emulator.
-
-### Starting an emulator
-
-By default, the following command is called:
-
-```sh
-start-firestore
+```bash
+docker run \
+  -v ${PWD}/firebase.json:/firebase/firebase.json \
+  -e "GCP_PROJECT=my-project" \
+  ehacke/firestore-emulator
 ```
-### Starting an emulator with options
 
-This image comes with options. Check [Firestore Emulator GCloud Wide Flags](https://cloud.google.com/sdk/gcloud/reference/beta/emulators/firestore/). `--legacy`, `--data-dir` and `--host-port` are not supported by this image.
+## Baseline Data
 
-## Creating a Firestore emulator with Docker Compose
+Pre-populate the emulators with baseline data by mounting to `/firebase/baseline-data`:
 
-The easiest way to create an emulator with this image is by using [Docker Compose](https://docs.docker.com/compose). The following snippet can be used as a `docker-compose.yml` for a firestore emulator:
+```bash
+# Export data from running emulator
+firebase emulators:export ./baseline-data
 
-```YAML
-version: "2"
-
-services:
-  firestore:
-    image: ehacke/firestore-emulator
-    volumes:
-      - firestore-data:/opt/data
-    environment:
-      - FIRESTORE_PROJECT_ID=project-test
-  app:
-    image: your-app-image
-    environment:
-      - FIRESTORE_EMULATOR_HOST=firestore
-      - FIRESTORE_PROJECT_ID=project-test
+# Use in container
+docker run \
+  -v ${PWD}/baseline-data:/firebase/baseline-data \
+  -e "GCP_PROJECT=my-project" \
+  ehacke/firestore-emulator
 ```
+
+## Connecting Your Application
+
+Configure your application to connect to the emulators using environment variables:
+
+### Node.js / JavaScript
+
+```javascript
+// Firestore
+process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+
+// Auth
+process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099';
+
+// Realtime Database
+process.env.FIREBASE_DATABASE_EMULATOR_HOST = 'localhost:9000';
+
+// Storage
+process.env.FIREBASE_STORAGE_EMULATOR_HOST = 'localhost:9199';
+
+// Pub/Sub
+process.env.PUBSUB_EMULATOR_HOST = 'localhost:8085';
+```
+
+### Python
+
+```python
+import os
+
+os.environ['FIRESTORE_EMULATOR_HOST'] = 'localhost:8080'
+os.environ['FIREBASE_AUTH_EMULATOR_HOST'] = 'localhost:9099'
+os.environ['FIREBASE_DATABASE_EMULATOR_HOST'] = 'localhost:9000'
+os.environ['FIREBASE_STORAGE_EMULATOR_HOST'] = 'localhost:9199'
+os.environ['PUBSUB_EMULATOR_HOST'] = 'localhost:8085'
+```
+
+## Emulator UI
+
+Access the Emulator Suite UI at `http://localhost:4000` to:
+
+- View and edit Firestore data
+- Manage Authentication users
+- View Realtime Database contents
+- Browse Storage files
+- Monitor Pub/Sub messages
+- View Functions logs
+
+Disable the UI by setting `UI_ENABLED=false`.
+
+## Breaking Changes from v1.x
+
+- Environment variable renamed: `FIRESTORE_PROJECT_ID` → `GCP_PROJECT`
+- Volume mount point changed: `/opt/data` → `/firebase`
+- Base image changed from `google/cloud-sdk:alpine` to `node:lts-alpine`
+- Multiple new ports exposed for additional emulators
+
+## License
+
+MIT License - Eric Hacke
