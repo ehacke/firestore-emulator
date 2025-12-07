@@ -7,7 +7,15 @@
       "Bash(git tag:*)",
       "Bash(npm view:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nRefactor to Firebase Emulator Suite v2.0.0\n\n- Add support for all Firebase emulators: Firestore, Auth, RDB, Storage, Pub/Sub, Functions, UI\n- Replace shell script entry point with Node.js config generator\n- Add configurable ports via environment variables\n- Add baseline data import support\n- Update to OpenJDK 21\n- Add CLAUDE.md documentation\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\nRefactor to Firebase Emulator Suite v2.0.0\n\n- Add support for all Firebase emulators: Firestore, Auth, RDB, Storage, Pub/Sub, Functions, UI\n- Replace shell script entry point with Node.js config generator\n- Add configurable ports via environment variables\n- Add baseline data import support\n- Update to OpenJDK 21\n- Add CLAUDE.md documentation\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(./scripts/build-and-push.sh:*)",
+      "Bash(git stash:*)",
+      "Bash(npm run docker:restart:*)",
+      "Bash(docker logs:*)",
+      "Bash(npm test:*)",
+      "Bash(docker ps:*)"
     ],
     "deny": [],
     "ask": []

@@ -9,7 +9,7 @@
 FROM node:lts-alpine AS app-env
 
 LABEL "maintainer"="eric@ehacke.com"
-LABEL "version"="2.0.0"
+LABEL "version"="2.0.1"
 LABEL "description"="Firebase Emulator Suite"
 
 # Install dependencies:
@@ -34,6 +34,7 @@ ENV UI_ENABLED="true"
 ENV AUTH_EMULATOR_PORT="9099"
 ENV PUBSUB_EMULATOR_PORT="8085"
 ENV FUNCTIONS_EMULATOR_PORT="5001"
+ENV FUNCTIONS_ENABLED="false"
 ENV STORAGE_EMULATOR_PORT="9199"
 ENV EMULATORS_HOST="0.0.0.0"
 

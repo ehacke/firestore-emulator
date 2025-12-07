@@ -1,6 +1,6 @@
 {
   "name": "@ehacke/firestore-emulator",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Firebase Emulator Suite Docker image supporting Firestore, Auth, Realtime Database, Storage, Pub/Sub, Functions, and Emulator UI.",
   "main": "index.js",
   "scripts": {

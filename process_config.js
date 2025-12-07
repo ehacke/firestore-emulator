@@ -78,6 +78,42 @@ service cloud.firestore {
   console.info('Generating Realtime Database rules (permissive for local testing)');
   fs.writeFileSync(`${configFolder}/database.rules.json`, databaseRules);
 
+  const emulators = {
+    firestore: {
+      port: parseInt(process.env.FIRESTORE_EMULATOR_PORT, 10) || 8080,
+      host: process.env.EMULATORS_HOST || '0.0.0.0',
+    },
+    ui: {
+      enabled: process.env.UI_ENABLED !== 'false',
+      port: parseInt(process.env.UI_EMULATOR_PORT, 10) || 4000,
+      host: process.env.EMULATORS_HOST || '0.0.0.0',
+    },
+    auth: {
+      port: parseInt(process.env.AUTH_EMULATOR_PORT, 10) || 9099,
+      host: process.env.EMULATORS_HOST || '0.0.0.0',
+    },
+    database: {
+      port: parseInt(process.env.RDB_EMULATOR_PORT, 10) || 9000,
+      host: process.env.EMULATORS_HOST || '0.0.0.0',
+    },
+    pubsub: {
+      port: parseInt(process.env.PUBSUB_EMULATOR_PORT, 10) || 8085,
+      host: process.env.EMULATORS_HOST || '0.0.0.0',
+    },
+    storage: {
+      port: parseInt(process.env.STORAGE_EMULATOR_PORT, 10) || 9199,
+      host: process.env.EMULATORS_HOST || '0.0.0.0',
+    },
+  };
+
+  // Only include functions emulator if explicitly enabled
+  if (process.env.FUNCTIONS_ENABLED === 'true') {
+    emulators.functions = {
+      port: parseInt(process.env.FUNCTIONS_EMULATOR_PORT, 10) || 5001,
+      host: process.env.EMULATORS_HOST || '0.0.0.0',
+    };
+  }
+
   const firebaseConfig = {
     storage: {
       rules: './storage.rules',
@@ -88,37 +124,7 @@ service cloud.firestore {
     database: {
       rules: './database.rules.json',
     },
-    emulators: {
-      firestore: {
-        port: parseInt(process.env.FIRESTORE_EMULATOR_PORT, 10) || 8080,
-        host: process.env.EMULATORS_HOST || '0.0.0.0',
-      },
-      ui: {
-        enabled: process.env.UI_ENABLED !== 'false',
-        port: parseInt(process.env.UI_EMULATOR_PORT, 10) || 4000,
-        host: process.env.EMULATORS_HOST || '0.0.0.0',
-      },
-      auth: {
-        port: parseInt(process.env.AUTH_EMULATOR_PORT, 10) || 9099,
-        host: process.env.EMULATORS_HOST || '0.0.0.0',
-      },
-      functions: {
-        port: parseInt(process.env.FUNCTIONS_EMULATOR_PORT, 10) || 5001,
-        host: process.env.EMULATORS_HOST || '0.0.0.0',
-      },
-      database: {
-        port: parseInt(process.env.RDB_EMULATOR_PORT, 10) || 9000,
-        host: process.env.EMULATORS_HOST || '0.0.0.0',
-      },
-      pubsub: {
-        port: parseInt(process.env.PUBSUB_EMULATOR_PORT, 10) || 8085,
-        host: process.env.EMULATORS_HOST || '0.0.0.0',
-      },
-      storage: {
-        port: parseInt(process.env.STORAGE_EMULATOR_PORT, 10) || 9199,
-        host: process.env.EMULATORS_HOST || '0.0.0.0',
-      },
-    },
+    emulators,
   };
 
   console.info('Generating Firebase configuration:', JSON.stringify(firebaseConfig, null, 2));

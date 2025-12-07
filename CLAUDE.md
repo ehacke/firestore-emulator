@@ -55,6 +55,7 @@ This document helps AI assistants understand and debug tests using the Firebase 
 | `STORAGE_EMULATOR_PORT` | `9199` | Storage port |
 | `PUBSUB_EMULATOR_PORT` | `8085` | Pub/Sub port |
 | `FUNCTIONS_EMULATOR_PORT` | `5001` | Functions port |
+| `FUNCTIONS_ENABLED` | `false` | Enable/disable Functions emulator |
 | `UI_EMULATOR_PORT` | `4000` | UI port |
 | `UI_ENABLED` | `true` | Enable/disable UI |
 | `EMULATORS_HOST` | `0.0.0.0` | Bind address |
