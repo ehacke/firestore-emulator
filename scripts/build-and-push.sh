@@ -37,8 +37,19 @@ NAME=$(cat package.json | jq .name -r | sed -e 's/@ehacke\///g')
 latestTag="ehacke/${NAME}:latest"
 tag="ehacke/${NAME}:${PACKAGE_VERSION}"
 
-echo "Building and pushing ${tag}"
+if [ -n "${DOCKER_PLATFORMS:-}" ]; then
+  platforms="${DOCKER_PLATFORMS}"
+elif [ -n "${DOCKER_PLATFORM:-}" ]; then
+  platforms="${DOCKER_PLATFORM}"
+else
+  platforms="linux/amd64,linux/arm64"
+fi
 
-docker build -t ${tag} -t ${latestTag} .
-docker push ${tag}
-docker push ${latestTag}
+echo "Building and pushing ${tag} for ${platforms}"
+
+docker buildx build \
+  --platform "${platforms}" \
+  --push \
+  -t "${tag}" \
+  -t "${latestTag}" \
+  .
